@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI ROI Calculator - Alexander Scott and Associates</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+/* AI ROI Calculator - All Styles Inline */
+:root {
+    --primary-color: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #3b82f6;
+    --secondary-color: #059669;
+    --warning-color: #d97706;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-light: #9ca3af;
+    --background: #ffffff;
+    --background-light: #f9fafb;
+    --border-color: #e5e7eb;
+    --border-radius: 8px;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--background-light);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    padding: 2rem 0;
+    box-shadow: var(--shadow-md);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.logo-image {
+    height: 80px;
+    width: auto;
+    object-fit: contain;
+}
+
+.logo-text {
+    text-align: left;
+}
+
+.logo h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.logo p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.main {
+    padding: 3rem 0;
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 4rem;
+    padding: 2rem;
+    background: var(--background);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.hero h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.hero-highlight {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border-radius: var(--border-radius);
+    border-left: 4px solid var(--warning-color);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.hero-highlight i {
+    color: var(--warning-color);
+    font-size: 1.5rem;
+}
+
+.calculator-section {
+    margin-bottom: 4rem;
+}
+
+.calculator-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+}
+
+.calculator-inputs,
+.calculator-results {
+    background: var(--background);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+}
+
+.calculator-inputs h2,
+.calculator-results h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.input-group {
+    margin-bottom: 2rem;
+}
+
+.input-group label {
+    display: block;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+}
+
+.input-group small {
+    display: block;
+    color: var(--text-light);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.calculate-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.calculate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.results-summary {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.result-card {
+    padding: 1.5rem;
+    background: var(--background-light);
+    border-radius: var(--border-radius);
+    text-align: center;
+    border: 2px solid var(--border-color);
+}
+
+.result-card.highlight {
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    border-color: var(--secondary-color);
+}
+
+.result-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.result-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.result-card.highlight .result-value {
+    color: var(--secondary-color);
+}
+
+.chart-container {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: var(--background-light);
+    border-radius: var(--border-radius);
+}
+
+.breakdown {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border-color);
+}
+
+.breakdown h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.breakdown-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.breakdown-item.highlight {
+    font-weight: 600;
+    color: var(--secondary-color);
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+    padding: 1rem;
+    border-radius: var(--border-radius);
+}
+
+.benefits {
+    background: var(--background);
+    padding: 3rem 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+}
+
+.benefits h2 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 3rem;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.benefit-card {
+    text-align: center;
+    padding: 2rem;
+    background: var(--background-light);
+    border-radius: var(--border-radius);
+    border: 2px solid var(--border-color);
+}
+
+.benefit-card i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.benefit-card h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.footer {
+    background: var(--text-primary);
+    color: white;
+    padding: 3rem 0 2rem;
+    margin-top: 4rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+}
+
+.footer-logo-section {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.footer-logo {
+    height: 80px;
+    width: auto;
+    background: white;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+}
+
+.footer-info h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.footer-info p {
+    color: #d1d5db;
+    margin-bottom: 0.5rem;
+}
+
+.contact-details {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 2rem;
+    border-left: 4px solid var(--primary-color);
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    color: #e5e7eb;
+}
+
+.contact-item a {
+    color: #e5e7eb;
+    text-decoration: none;
+}
+
+.contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, var(--secondary-color) 0%, #047857 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 1rem 2rem;
+}
+
+.copyright {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #374151;
+}
+
+.copyright p {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    margin-bottom: 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .calculator-container {
+        grid-template-columns: 1fr;
+    }
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+    .logo {
+        flex-direction: column;
+        text-align: center;
+    }
+    .logo-text {
+        text-align: center;
+    }
+}
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="images/asa-logo.png" alt="Alexander Scott and Associates" class="logo-image">
+                    <div class="logo-text">
+                        <h1>Alexander Scott and Associates</h1>
+                        <p>Strategic AI Implementation Consulting</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <section class="hero">
+                <h1>AI ROI Calculator</h1>
+                <p class="hero-subtitle">Calculate the Annual Economic Unit (AEU) - the estimated annual dollar value of productivity your organization gains by freeing employees from repetitive tasks through AI.</p>
+                <div class="hero-highlight">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Even modest time savings each day can translate into <strong>thousands of dollars</strong> in annual value. Upskilling your team is not just smart, it's strategic!</span>
+                </div>
+            </section>
+
+            <section class="calculator-section">
+                <div class="calculator-container">
+                    <div class="calculator-inputs">
+                        <h2><i class="fas fa-calculator"></i> Calculate Your AI ROI</h2>
+                        
+                        <div class="input-group">
+                            <label for="numEmployees">
+                                <i class="fas fa-users"></i>
+                                Number of Employees Affected by AI
+                            </label>
+                            <input type="number" id="numEmployees" value="25" min="1" placeholder="e.g., 25">
+                            <small>How many employees will benefit from AI automation?</small>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="hoursPerDay">
+                                <i class="fas fa-clock"></i>
+                                Hours Saved Per Employee Per Day
+                            </label>
+                            <input type="number" id="hoursPerDay" value="1.5" min="0.1" step="0.1" placeholder="e.g., 1.5">
+                            <small>Time saved daily through AI automation (hours)</small>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="hourlyWage">
+                                <i class="fas fa-dollar-sign"></i>
+                                Average Hourly Wage ($)
+                            </label>
+                            <input type="number" id="hourlyWage" value="35" min="1" placeholder="e.g., 35">
+                            <small>Average hourly compensation including benefits</small>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="implementationCost">
+                                <i class="fas fa-tools"></i>
+                                Implementation & Training Cost ($)
+                            </label>
+                            <input type="number" id="implementationCost" value="15000" min="0" placeholder="e.g., 15,000">
+                            <small>One-time investment in AI tools and training</small>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="timePeriod">
+                                <i class="fas fa-calendar-alt"></i>
+                                ROI Time Period (Years)
+                            </label>
+                            <select id="timePeriod">
+                                <option value="1">1 Year</option>
+                                <option value="2">2 Years</option>
+                                <option value="3" selected>3 Years</option>
+                                <option value="5">5 Years</option>
+                            </select>
+                        </div>
+
+                        <button class="calculate-btn" onclick="calculateROI()">
+                            <i class="fas fa-chart-bar"></i>
+                            Calculate AI ROI
+                        </button>
+                    </div>
+
+                    <div class="calculator-results">
+                        <h2><i class="fas fa-chart-pie"></i> Your AI Investment Results</h2>
+                        
+                        <div class="results-summary">
+                            <div class="result-card highlight">
+                                <div class="result-label">Annual Economic Unit (AEU)</div>
+                                <div class="result-value" id="annualSavings">$0</div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-label">Total ROI</div>
+                                <div class="result-value" id="roiPercentage">0%</div>
+                            </div>
+                            
+                            <div class="result-card">
+                                <div class="result-label">Payback Period</div>
+                                <div class="result-value" id="paybackPeriod">0 months</div>
+                            </div>
+                        </div>
+
+                        <div class="chart-container" style="height: 400px;">
+                            <canvas id="roiChart"></canvas>
+                        </div>
+
+                        <div class="breakdown">
+                            <h3>Calculation Breakdown</h3>
+                            <div class="breakdown-item">
+                                <span>Daily Productivity Savings:</span>
+                                <span id="dailySavings">$0</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>Monthly Savings:</span>
+                                <span id="monthlySavings">$0</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>Annual Savings:</span>
+                                <span id="annualSavingsBreakdown">$0</span>
+                            </div>
+                            <div class="breakdown-item">
+                                <span>Total Savings Over Period:</span>
+                                <span id="totalSavings">$0</span>
+                            </div>
+                            <div class="breakdown-item highlight">
+                                <span>Net Profit After Investment:</span>
+                                <span id="netProfit">$0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="benefits">
+                <h2>Why AI Investment Matters for SMB Growth</h2>
+                <div class="benefits-grid">
+                    <div class="benefit-card">
+                        <i class="fas fa-rocket"></i>
+                        <h3>Accelerated Growth</h3>
+                        <p>Free up your team to focus on strategic initiatives that drive business expansion and innovation.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <i class="fas fa-cut"></i>
+                        <h3>Cost Optimization</h3>
+                        <p>Reduce operational overhead while maintaining or improving service quality and customer satisfaction.</p>
+                    </div>
+                    <div class="benefit-card">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>Productivity Gains</h3>
+                        <p>Eliminate repetitive tasks and empower employees to contribute more meaningfully to your organization.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <div class="footer-logo-section">
+                        <img src="images/asa-logo.png" alt="Alexander Scott and Associates" class="footer-logo">
+                        <div class="footer-text">
+                            <h3>Alexander Scott and Associates</h3>
+                            <p>Strategic AI Implementation Consulting</p>
+                            <p>Empowering SMB leaders to unlock AI-driven growth and productivity.</p>
+                        </div>
+                    </div>
+                    <div class="copyright">
+                        <p>&copy; 2024 Alexander Scott and Associates. All rights reserved.</p>
+                        <p>Developed by Wilts Alexander | Executive Leadership Coach & Strategic Transformation Consultant</p>
+                    </div>
+                </div>
+                <div class="footer-contact">
+                    <h4>Ready to Transform Your Business?</h4>
+                    <p>Schedule a consultation to develop your AI implementation strategy.</p>
+                    <div class="contact-details">
+                        <div class="contact-item">
+                            <i class="fas fa-user"></i>
+                            <span>Wilts Alexander</span>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone"></i>
+                            <a href="tel:+16784285997">678-428-5997</a>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>15745 Acorn Circle, Tavares FL 32778</span>
+                        </div>
+                    </div>
+                    <a href="https://calendly.com/coachwiltsalexander/30min" target="_blank" class="contact-btn">
+                        <i class="fas fa-calendar-alt"></i> Get Started - Schedule Consultation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+// AI ROI Calculator - All JavaScript Inline
+let roiChart = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = ['numEmployees', 'hoursPerDay', 'hourlyWage', 'implementationCost', 'timePeriod'];
+    inputs.forEach(inputId => {
+        const element = document.getElementById(inputId);
+        if (element) {
+            element.addEventListener('input', calculateROI);
+            element.addEventListener('change', calculateROI);
+        }
+    });
+    calculateROI();
+});
+
+function calculateROI() {
+    const numEmployees = parseFloat(document.getElementById('numEmployees').value) || 0;
+    const hoursPerDay = parseFloat(document.getElementById('hoursPerDay').value) || 0;
+    const hourlyWage = parseFloat(document.getElementById('hourlyWage').value) || 0;
+    const implementationCost = parseFloat(document.getElementById('implementationCost').value) || 0;
+    const timePeriod = parseFloat(document.getElementById('timePeriod').value) || 1;
+
+    if (numEmployees <= 0 || hoursPerDay <= 0 || hourlyWage <= 0) {
+        displayEmptyResults();
+        return;
+    }
+
+    const businessDaysPerYear = 250;
+    const dailySavings = numEmployees * hoursPerDay * hourlyWage;
+    const monthlySavings = dailySavings * 21;
+    const annualSavings = dailySavings * businessDaysPerYear;
+    const totalSavings = annualSavings * timePeriod;
+    const netProfit = totalSavings - implementationCost;
+    const roiPercentage = implementationCost > 0 ? ((netProfit / implementationCost) * 100) : 0;
+    const paybackPeriod = implementationCost > 0 && monthlySavings > 0 ? implementationCost / monthlySavings : 0;
+
+    document.getElementById('annualSavings').textContent = formatCurrency(annualSavings);
+    document.getElementById('roiPercentage').textContent = formatPercentage(roiPercentage);
+    document.getElementById('paybackPeriod').textContent = formatPaybackPeriod(paybackPeriod);
+    document.getElementById('dailySavings').textContent = formatCurrency(dailySavings);
+    document.getElementById('monthlySavings').textContent = formatCurrency(monthlySavings);
+    document.getElementById('annualSavingsBreakdown').textContent = formatCurrency(annualSavings);
+    document.getElementById('totalSavings').textContent = formatCurrency(totalSavings);
+    document.getElementById('netProfit').textContent = formatCurrency(netProfit);
+
+    updateROIChart(implementationCost, annualSavings, netProfit, timePeriod);
+}
+
+function displayEmptyResults() {
+    ['annualSavings', 'dailySavings', 'monthlySavings', 'annualSavingsBreakdown', 'totalSavings', 'netProfit'].forEach(id => {
+        document.getElementById(id).textContent = '$0';
+    });
+    document.getElementById('roiPercentage').textContent = '0%';
+    document.getElementById('paybackPeriod').textContent = '0 months';
+    if (roiChart) {
+        roiChart.destroy();
+        roiChart = null;
+    }
+}
+
+function updateROIChart(implementationCost, annualSavings, netProfit, timePeriod) {
+    const ctx = document.getElementById('roiChart').getContext('2d');
+    if (roiChart) {
+        roiChart.destroy();
+    }
+    
+    roiChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Implementation Cost', 'Annual Savings', 'Net Profit'],
+            datasets: [{
+                label: 'AI Investment Analysis',
+                data: [implementationCost, annualSavings, netProfit],
+                backgroundColor: ['#dc2626', '#2563eb', netProfit >= 0 ? '#059669' : '#dc2626'],
+                borderColor: ['#b91c1c', '#1d4ed8', netProfit >= 0 ? '#047857' : '#b91c1c'],
+                borderWidth: 2,
+                borderRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: `AI ROI Analysis - ${timePeriod} Year${timePeriod > 1 ? 's' : ''}`,
+                    font: { size: 16, weight: 'bold' },
+                    color: '#1f2937'
+                },
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1f2937',
+                    callbacks: {
+                        label: function(context) {
+                            return context.label + ': ' + formatCurrency(context.parsed.y);
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return formatCurrency(value);
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function formatCurrency(value) {
+    if (value === 0) return '$0';
+    const absValue = Math.abs(value);
+    const isNegative = value < 0;
+    let formatted;
+    if (absValue >= 1000000) {
+        formatted = '$' + (absValue / 1000000).toFixed(1) + 'M';
+    } else if (absValue >= 1000) {
+        formatted = '$' + (absValue / 1000).toFixed(1) + 'K';
+    } else {
+        formatted = '$' + absValue.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 0});
+    }
+    return isNegative ? '-' + formatted : formatted;
+}
+
+function formatPercentage(value) {
+    if (value === 0) return '0%';
+    const absValue = Math.abs(value);
+    const isNegative = value < 0;
+    return (isNegative ? '-' : '') + absValue.toFixed(1) + '%';
+}
+
+function formatPaybackPeriod(months) {
+    if (months === 0) return '0 months';
+    if (months === Infinity) return 'Never';
+    const roundedMonths = Math.round(months);
+    if (roundedMonths >= 12) {
+        const years = Math.floor(roundedMonths / 12);
+        const remainingMonths = roundedMonths % 12;
+        let result = years + ' year' + (years > 1 ? 's' : '');
+        if (remainingMonths > 0) {
+            result += ', ' + remainingMonths + ' month' + (remainingMonths > 1 ? 's' : '');
+        }
+        return result;
+    }
+    return roundedMonths + ' month' + (roundedMonths > 1 ? 's' : '');
+}
+    </script>
+</body>
+</html>
